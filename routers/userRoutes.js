@@ -1,76 +1,12 @@
-// // const express = require('express');
-// // const router = express.Router();
-// // const { getUsers } = require('../controllers/userControllers');
-
-// // router.get('/', getUsers);
-
-// // module.exports = router;
-
-// // const express = require('express');
-// // const router = express.Router();
-// // const { register, login, logout } = require('../controllers/userControllers');
-
-// // router.post('/register', register);     // role: user/admin
-// // router.post('/login', login);
-// // router.post('/logout', logout);
-
-// // module.exports = router;
-
-// const express = require('express');
-// const router = express.Router();
-// const { register, login } = require('../controllers/userControllers');
-// const { verifyToken } = require('../middleware/authMiddleware');  // Adjust path if needed
-
-
-// router.post('/register', register); // pass role: 'user' or 'admin'
-// router.post('/login', login);
-
-
-// // Helper function to verify token from cookie
-// const verifyToken = (req, res) => {
-//     const token = req.cookies.User_Jwt;
-//     if (!token) return null;
-//     try {
-//       return jwt.verify(token, process.env.JWT_SECRET);
-//     } catch {
-//       return null;
-//     }
-//   };
-
-
-//   // Define the route
-// router.get('/user', (req, res) => {
-//     const user = verifyToken(req, res);
-//     if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  
-//     res.json({
-//       name: user.name,
-//       email: user.email,
-//       role: user.role,
-//     });
-//   });
-
-// // router.get('/user', (req, res) => {
-// //     const user = verifyToken(req, res); // Use your verification function here
-// //     if (!user) return res.status(401).json({ error: 'Unauthorized' });
-  
-// //     // Return only the necessary user data
-// //     res.json({
-// //       name: user.name,
-// //       email: user.email,
-// //       role: user.role,
-// //       // Add other fields you want to expose
-// //     });
-// //   });
-  
-
-// module.exports = router;
 
 
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { register, login } = require('../controllers/userControllers');
+const Inquiry = require('../models/enquary');
+
+
 
 // Register & Login routes
 router.post('/register', register); // pass role: 'user' or 'admin'
@@ -92,5 +28,18 @@ router.get('/user', (req, res) => {
     res.status(401).json({ error: 'Invalid token' });
   }
 });
+
+router.post('/inquiries', async (req, res) => {
+  try {
+    const { inquireFor, subject } = req.body;
+    const newInquiry = new Inquiry({ inquireFor, subject });
+    await newInquiry.save();
+    res.status(201).json({ message: 'Inquiry saved successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to save inquiry' });
+  }
+});
+
 
 module.exports = router;
