@@ -46,10 +46,28 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 // app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+// app.use(cors({
+//     origin: "http://localhost:3000","https://fullstack-frontend-cvja.vercel.app/"
+//     methods: "GET, POST, PATCH, DELETE, PUT ",
+//     credentials: true
+// }));
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://fullstack-frontend-cvja.vercel.app"
+];
+
 app.use(cors({
-    origin: "http://localhost:3000",
-    methods: "GET, POST, PATCH, DELETE, PUT ",
-    credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET,POST,PATCH,DELETE,PUT",
+  credentials: true
 }));
 
 
